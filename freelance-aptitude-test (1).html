@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>フリーランス適職診断ツール</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Yu Gothic', 'Hiragino Sans', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .progress-container {
+            background: #e0e0e0;
+            height: 8px;
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+
+        .progress-text {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .start-screen, .question-screen, .result-screen {
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .start-screen {
+            text-align: center;
+        }
+
+        .start-description {
+            color: #555;
+            line-height: 1.8;
+            margin: 30px 0;
+            text-align: left;
+        }
+
+        .start-description ul {
+            list-style-position: inside;
+            margin-top: 15px;
+        }
+
+        .start-description li {
+            margin: 10px 0;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 20px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .question-container {
+            margin: 30px 0;
+        }
+
+        .question-text {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+        }
+
+        .back-btn {
+            background: #e0e0e0;
+            color: #333;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #d0d0d0;
+            transform: translateY(-2px);
+        }
+
+        .back-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .option-btn {
+            background: #f5f5f5;
+            border: 2px solid #e0e0e0;
+            padding: 18px 25px;
+            border-radius: 15px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            color: #333;
+        }
+
+        .option-btn:hover {
+            background: #e8e8ff;
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+
+        .option-btn:active {
+            transform: scale(0.98);
+        }
+
+        .result-container {
+            margin-top: 30px;
+        }
+
+        .result-title {
+            font-size: 24px;
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .job-result {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .job-name {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .job-percentage {
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .percentage-bar {
+            background: #e0e0e0;
+            height: 10px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .percentage-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            transition: width 1s ease;
+        }
+
+        .job-description {
+            color: #555;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-top: 10px;
+        }
+
+        .result-note {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin-top: 30px;
+            border-radius: 5px;
+            color: #856404;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .restart-btn {
+            display: block;
+            margin: 30px auto 0;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .question-text {
+                font-size: 18px;
+            }
+
+            .option-btn {
+                padding: 15px 20px;
+                font-size: 14px;
+            }
+        }
+
+        .emoji {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+
+        .rank-badge {
+            display: inline-block;
+            background: #ffd700;
+            color: #333;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .rank-badge.top {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 フリーランス適職診断ツール</h1>
+            <p class="subtitle">あなたに最適なフリーランスの仕事を見つけましょう</p>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <div class="progress-text" id="progressText">診断開始前</div>
+
+        <!-- スタート画面 -->
+        <div id="startScreen" class="start-screen">
+            <div class="start-description">
+                <h2 style="color: #667eea; margin-bottom: 20px;">📝 診断について</h2>
+                <p>この診断では、30の質問にお答えいただくことで、あなたに最適なフリーランスの職種を判定します。</p>
+                <h3 style="color: #333; margin: 25px 0 15px;">診断できる職種：</h3>
+                <ul>
+                    <li>📝 <strong>Webライター</strong> - 文章を書くことが好きな方</li>
+                    <li>🎬 <strong>動画編集者</strong> - 映像制作に興味がある方</li>
+                    <li>🎨 <strong>デザイナー</strong> - ビジュアル表現が得意な方</li>
+                    <li>💼 <strong>オンライン秘書</strong> - サポート業務が得意な方</li>
+                    <li>💻 <strong>プログラマー</strong> - 論理的思考が得意な方</li>
+                </ul>
+                <p style="margin-top: 25px;">所要時間は約5分です。直感で答えてください。</p>
+                <p style="margin-top: 20px; color: #d32f2f; font-weight: bold; text-align: center; padding: 15px; background: #ffebee; border-radius: 10px;">⚠️ この適職診断はあくまでも目安です。参考程度にお楽しみください。</p>
+            </div>
+            <button class="btn" onclick="startTest()">診断を開始する</button>
+        </div>
+
+        <!-- 質問画面 -->
+        <div id="questionScreen" class="question-screen hidden">
+            <div class="question-container">
+                <div class="question-text" id="questionText"></div>
+                <div class="options" id="optionsContainer"></div>
+                <div class="button-container">
+                    <button class="back-btn" id="backBtn" onclick="goBack()">← 戻る</button>
+                    <span style="color: #999; font-size: 12px;">選択肢をクリックすると次の質問へ進みます</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 結果画面 -->
+        <div id="resultScreen" class="result-screen hidden">
+            <div class="result-container">
+                <h2 class="result-title">🎉 診断結果</h2>
+                <div id="resultsContainer"></div>
+                <div class="result-note">
+                    <strong>💡 診断結果について</strong><br>
+                    この診断結果は、あなたの現在の興味や傾向を示すものです。最も適性が高い職種から挑戦してみるのがおすすめですが、複数の職種を組み合わせて活動することも可能です。あなたの可能性は無限大です！
+                </div>
+                <button class="btn restart-btn" onclick="restartTest()">もう一度診断する</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 質問データ（30問）
+        const questions = [
+            // Webライター関連 (1-6)
+            { text: "文章を書くことが好きだ", weights: { writer: 3, editor: 0, designer: 0, secretary: 1, programmer: 0 } },
+            { text: "物事を分かりやすく説明することが得意だ", weights: { writer: 3, editor: 1, designer: 1, secretary: 2, programmer: 1 } },
+            { text: "読書が好きで、様々なジャンルの本を読む", weights: { writer: 2, editor: 1, designer: 1, secretary: 1, programmer: 1 } },
+            { text: "情報収集やリサーチが苦にならない", weights: { writer: 3, editor: 1, designer: 1, secretary: 2, programmer: 2 } },
+            { text: "言葉選びにこだわる方だ", weights: { writer: 3, editor: 1, designer: 1, secretary: 1, programmer: 0 } },
+            { text: "ブログやSNSで発信するのが好きだ", weights: { writer: 2, editor: 2, designer: 2, secretary: 0, programmer: 0 } },
+
+            // 動画編集者関連 (7-12)
+            { text: "映画やYouTubeをよく見る", weights: { writer: 0, editor: 2, designer: 1, secretary: 0, programmer: 0 } },
+            { text: "細かい作業を根気強く続けられる", weights: { writer: 1, editor: 3, designer: 2, secretary: 2, programmer: 3 } },
+            { text: "音楽やサウンドに敏感だ", weights: { writer: 0, editor: 3, designer: 2, secretary: 0, programmer: 0 } },
+            { text: "映像の構成やテンポを考えるのが楽しい", weights: { writer: 1, editor: 3, designer: 2, secretary: 0, programmer: 1 } },
+            { text: "新しいソフトウェアの操作を学ぶことに抵抗がない", weights: { writer: 1, editor: 2, designer: 2, secretary: 1, programmer: 3 } },
+            { text: "視覚的な表現で感動を与えたい", weights: { writer: 1, editor: 3, designer: 3, secretary: 0, programmer: 0 } },
+
+            // デザイナー関連 (13-18)
+            { text: "色の組み合わせやレイアウトを考えるのが好きだ", weights: { writer: 0, editor: 1, designer: 3, secretary: 0, programmer: 0 } },
+            { text: "美術館やギャラリーに行くのが好きだ", weights: { writer: 1, editor: 1, designer: 3, secretary: 0, programmer: 0 } },
+            { text: "アイデアを視覚化することが得意だ", weights: { writer: 1, editor: 2, designer: 3, secretary: 0, programmer: 1 } },
+            { text: "流行やトレンドに敏感な方だ", weights: { writer: 1, editor: 1, designer: 3, secretary: 1, programmer: 0 } },
+            { text: "独自の世界観や表現を追求したい", weights: { writer: 2, editor: 2, designer: 3, secretary: 0, programmer: 1 } },
+            { text: "他人の作品を見て刺激を受けることが多い", weights: { writer: 1, editor: 2, designer: 3, secretary: 0, programmer: 1 } },
+
+            // オンライン秘書関連 (19-24)
+            { text: "人をサポートすることにやりがいを感じる", weights: { writer: 1, editor: 0, designer: 0, secretary: 3, programmer: 0 } },
+            { text: "スケジュール管理が得意だ", weights: { writer: 1, editor: 1, designer: 1, secretary: 3, programmer: 1 } },
+            { text: "複数の作業を同時に進めることができる", weights: { writer: 1, editor: 2, designer: 1, secretary: 3, programmer: 2 } },
+            { text: "コミュニケーションを取ることが好きだ", weights: { writer: 2, editor: 1, designer: 1, secretary: 3, programmer: 0 } },
+            { text: "整理整頓や情報の管理が得意だ", weights: { writer: 1, editor: 1, designer: 1, secretary: 3, programmer: 2 } },
+            { text: "相手のニーズを察知することが得意だ", weights: { writer: 2, editor: 1, designer: 2, secretary: 3, programmer: 1 } },
+
+            // プログラマー関連 (25-30)
+            { text: "論理的に物事を考えるのが得意だ", weights: { writer: 1, editor: 1, designer: 0, secretary: 1, programmer: 3 } },
+            { text: "問題解決のために試行錯誤することが好きだ", weights: { writer: 1, editor: 2, designer: 2, secretary: 1, programmer: 3 } },
+            { text: "数学やパズルが好きだ", weights: { writer: 0, editor: 0, designer: 0, secretary: 0, programmer: 3 } },
+            { text: "仕組みやシステムを理解したいと思う", weights: { writer: 1, editor: 1, designer: 0, secretary: 1, programmer: 3 } },
+            { text: "新しい技術やツールを学ぶことにワクワクする", weights: { writer: 1, editor: 2, designer: 2, secretary: 1, programmer: 3 } },
+            { text: "自分が作ったものが動くのを見るのが楽しい", weights: { writer: 1, editor: 2, designer: 2, secretary: 0, programmer: 3 } }
+        ];
+
+        const jobInfo = {
+            writer: {
+                name: "Webライター",
+                emoji: "📝",
+                description: "あなたには文章で情報を伝える力があります。ブログ記事、SEO記事、コピーライティングなど、幅広い分野で活躍できる可能性があります。"
+            },
+            editor: {
+                name: "動画編集者",
+                emoji: "🎬",
+                description: "映像を通じて物語を伝える才能があります。YouTube、広告、プロモーション動画など、視覚的コンテンツの制作で力を発揮できるでしょう。"
+            },
+            designer: {
+                name: "デザイナー",
+                emoji: "🎨",
+                description: "ビジュアルで価値を生み出す感性があります。Webデザイン、グラフィックデザイン、UIデザインなど、創造的な分野で才能を発揮できます。"
+            },
+            secretary: {
+                name: "オンライン秘書",
+                emoji: "💼",
+                description: "人をサポートし、業務を円滑に進める力があります。スケジュール管理、メール対応、データ入力など、多岐にわたる業務で信頼されるでしょう。"
+            },
+            programmer: {
+                name: "プログラマー",
+                emoji: "💻",
+                description: "論理的思考でシステムを構築する力があります。Web開発、アプリ開発、自動化ツールの作成など、技術で問題を解決できます。"
+            }
+        };
+
+        let currentQuestion = 0;
+        let answers = [];
+
+        const options = [
+            { text: "すごく当てはまる", value: 5 },
+            { text: "少し当てはまる", value: 4 },
+            { text: "どちらとも言えない", value: 3 },
+            { text: "あまり当てはまらない", value: 2 },
+            { text: "全く当てはまらない", value: 1 }
+        ];
+
+        function startTest() {
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('questionScreen').classList.remove('hidden');
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const question = questions[currentQuestion];
+            document.getElementById('questionText').textContent = `Q${currentQuestion + 1}. ${question.text}`;
+            
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+            
+            options.forEach(option => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = option.text;
+                btn.onclick = () => selectAnswer(option.value);
+                optionsContainer.appendChild(btn);
+            });
+
+            // 戻るボタンの状態を更新
+            const backBtn = document.getElementById('backBtn');
+            if (backBtn) {
+                backBtn.disabled = currentQuestion === 0;
+            }
+
+            updateProgress();
+        }
+
+        function selectAnswer(value) {
+            answers.push(value);
+            currentQuestion++;
+
+            if (currentQuestion < questions.length) {
+                showQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function updateProgress() {
+            const progress = (currentQuestion / questions.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('progressText').textContent = `質問 ${currentQuestion + 1} / ${questions.length}`;
+        }
+
+        function calculateResults() {
+            const scores = {
+                writer: 0,
+                editor: 0,
+                designer: 0,
+                secretary: 0,
+                programmer: 0
+            };
+
+            const maxScores = {
+                writer: 0,
+                editor: 0,
+                designer: 0,
+                secretary: 0,
+                programmer: 0
+            };
+
+            questions.forEach((question, index) => {
+                const answer = answers[index];
+                Object.keys(question.weights).forEach(job => {
+                    scores[job] += question.weights[job] * answer;
+                    maxScores[job] += question.weights[job] * 5;
+                });
+            });
+
+            const percentages = {};
+            Object.keys(scores).forEach(job => {
+                percentages[job] = maxScores[job] > 0 
+                    ? Math.round((scores[job] / maxScores[job]) * 100) 
+                    : 0;
+            });
+
+            return percentages;
+        }
+
+        function showResults() {
+            document.getElementById('questionScreen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.remove('hidden');
+            document.getElementById('progressBar').style.width = '100%';
+            document.getElementById('progressText').textContent = '診断完了！';
+
+            const results = calculateResults();
+            const sortedResults = Object.entries(results).sort((a, b) => b[1] - a[1]);
+
+            const resultsContainer = document.getElementById('resultsContainer');
+            resultsContainer.innerHTML = '';
+
+            sortedResults.forEach(([ job, percentage], index) => {
+                const info = jobInfo[job];
+                const resultDiv = document.createElement('div');
+                resultDiv.className = 'job-result';
+                
+                const rankBadge = index === 0 ? '<span class="rank-badge top">最適</span>' : '';
+                
+                resultDiv.innerHTML = `
+                    <div class="job-name">
+                        <span class="emoji">${info.emoji}</span>
+                        ${info.name}
+                        ${rankBadge}
+                    </div>
+                    <div class="job-percentage">${percentage}%</div>
+                    <div class="percentage-bar">
+                        <div class="percentage-fill" style="width: 0%;" data-width="${percentage}%"></div>
+                    </div>
+                    <div class="job-description">${info.description}</div>
+                `;
+                
+                resultsContainer.appendChild(resultDiv);
+            });
+
+            // アニメーション効果
+            setTimeout(() => {
+                document.querySelectorAll('.percentage-fill').forEach(fill => {
+                    fill.style.width = fill.getAttribute('data-width');
+                });
+            }, 100);
+        }
+
+        function goBack() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                answers.pop();
+                showQuestion();
+            }
+        }
+
+        function restartTest() {
+            currentQuestion = 0;
+            answers = [];
+            document.getElementById('resultScreen').classList.add('hidden');
+            document.getElementById('startScreen').classList.remove('hidden');
+            document.getElementById('progressBar').style.width = '0%';
+            document.getElementById('progressText').textContent = '診断開始前';
+        }
+    </script>
+</body>
+</html>
